@@ -22,4 +22,69 @@
 
   .ant-table-wrapper {
   }
+  
+  
+}
+
+.btn {
+  cursor: pointer;
+}
+
+.new-block__btn {
+  background: transparent;
+  display: block;
+  margin: 0 auto;
+  border: 2px solid;
+  border-color: #5BABDE;
+  padding: 14px 40px;
+  width: 80%;
+  outline: none;
+  color: #414141;
+  font-size: 1.2em;
+  font-weight: 500;
+  border-radius: 30px;
+  
+  transition: all 0.25s ease;
+  position: relative;
+  
+  overflow: hidden;
+  z-index: 2;
+  
+  &::before {
+    content: "";
+    display: block;
+    position: absolute;
+    top: -5%;
+    left: -1%;
+    
+    width: 110%;
+    height: 110%;
+    background-color: #F3D250;
+    z-index: -1;
+  }
+  
+  &::after {
+    content: "";
+    display: block;
+    position: absolute;
+    top: -5%;
+    left: -150%;
+    width: 110%;
+    height: 110%;
+    
+    background-color: #5BABDE;
+    z-index: -1;
+    border-radius: inherit;
+    
+    transition: inherit;
+  }
+  
+  &:hover {
+    color: white;
+    transition-delay: .05s;
+    
+    &::after {
+      left: -1%;
+    }
+  }
 }
