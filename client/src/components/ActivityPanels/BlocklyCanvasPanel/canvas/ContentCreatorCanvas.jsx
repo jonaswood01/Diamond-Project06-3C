@@ -1,31 +1,29 @@
-import React, { useEffect, useRef, useState, useReducer } from 'react';
-import '../../ActivityLevels.less';
+import React, { useEffect, useRef, useState, useReducer } from "react";
+import "../../ActivityLevels.less";
 import {
   compileArduinoCode,
   handleCreatorSaveActivity,
   handleCreatorSaveActivityLevel,
   handleUpdateWorkspace,
-} from '../../Utils/helpers';
-import { message, Spin, Row, Col, Alert, Dropdown, Menu } from 'antd';
-import CodeModal from '../modals/CodeModal';
-import SaveAsModal from '../modals/SaveAsModal';
-import ConsoleModal from '../modals/ConsoleModal';
-import PlotterModal from '../modals/PlotterModal';
-import StudentToolboxMenu from '../modals/StudentToolboxMenu';
-import LoadWorkspaceModal from '../modals/LoadWorkspaceModal';
-import DisplayDiagramModal from '../modals/DisplayDiagramModal'
+} from "../../Utils/helpers";
+import { message, Spin, Row, Col, Alert, Dropdown, Menu, Button } from "antd";
+import CodeModal from "../modals/CodeModal";
+import SaveAsModal from "../modals/SaveAsModal";
+import ConsoleModal from "../modals/ConsoleModal";
+import PlotterModal from "../modals/PlotterModal";
+import StudentToolboxMenu from "../modals/StudentToolboxMenu";
+import LoadWorkspaceModal from "../modals/LoadWorkspaceModal";
+import DisplayDiagramModal from "../modals/DisplayDiagramModal";
 import {
   connectToPort,
   handleCloseConnection,
   handleOpenConnection,
-} from '../../Utils/consoleHelpers';
-import {
-  getAuthorizedWorkspace,
-  getAuthorizedWorkspaceToolbox,
-} from '../../../../Utils/requests';
-import ArduinoLogo from '../Icons/ArduinoLogo';
-import PlotterLogo from '../Icons/PlotterLogo';
-import { useNavigate } from 'react-router-dom';
+} from "../../Utils/consoleHelpers";
+import { getAuthorizedWorkspace, getAuthorizedWorkspaceToolbox } from "../../../../Utils/requests";
+import ArduinoLogo from "../Icons/ArduinoLogo";
+import PlotterLogo from "../Icons/PlotterLogo";
+import { useNavigate } from "react-router-dom";
+import NewBlockModal from "./NewBlockModal";
 
 let plotId = 1;
 
@@ -45,9 +43,10 @@ export default function ContentCreatorCanvas({
   const [plotData, setPlotData] = useState([]);
   const [connectionOpen, setConnectionOpen] = useState(false);
   const [selectedCompile, setSelectedCompile] = useState(false);
-  const [compileError, setCompileError] = useState('');
+  const [compileError, setCompileError] = useState("");
   const [studentToolbox, setStudentToolbox] = useState([]);
   const [openedToolBoxCategories, setOpenedToolBoxCategories] = useState([]);
+  const [showNewBlockModal, setShowNewBlockModal] = useState(false);
 
   const navigate = useNavigate();
   const [forceUpdate] = useReducer((x) => x + 1, 0);
@@ -55,8 +54,8 @@ export default function ContentCreatorCanvas({
   const activityRef = useRef(null);
 
   const setWorkspace = () => {
-    workspaceRef.current = window.Blockly.inject('blockly-canvas', {
-      toolbox: document.getElementById('toolbox'),
+    workspaceRef.current = window.Blockly.inject("blockly-canvas", {
+      toolbox: document.getElementById("toolbox"),
     });
   };
 
@@ -79,10 +78,7 @@ export default function ContentCreatorCanvas({
           toolboxRes.data.toolbox &&
             toolboxRes.data.toolbox.forEach(([category, blocks]) => {
               tempCategories.push(category);
-              tempToolBox = [
-                ...tempToolBox,
-                ...blocks.map((block) => block.name),
-              ];
+              tempToolBox = [...tempToolBox, ...blocks.map((block) => block.name)];
             });
 
           setOpenedToolBoxCategories(tempCategories);
@@ -112,11 +108,7 @@ export default function ContentCreatorCanvas({
   };
 
   const handleGoBack = () => {
-    if (
-      window.confirm(
-        'All unsaved progress will be lost. Do you still want to go back?'
-      )
-    )
+    if (window.confirm("All unsaved progress will be lost. Do you still want to go back?"))
       navigate(-1);
   };
 
@@ -140,15 +132,11 @@ export default function ContentCreatorCanvas({
   const handleCreatorSave = async () => {
     // Save activity template
     if (!isSandbox && !isMentorActivity) {
-      const res = await handleCreatorSaveActivityLevel(
-        activity.id,
-        workspaceRef,
-        studentToolbox
-      );
+      const res = await handleCreatorSaveActivityLevel(activity.id, workspaceRef, studentToolbox);
       if (res.err) {
         message.error(res.err);
       } else {
-        message.success('Activity Template saved successfully');
+        message.success("Activity Template saved successfully");
       }
     } else if (!isSandbox && isMentorActivity) {
       // Save activity template
@@ -156,20 +144,16 @@ export default function ContentCreatorCanvas({
       if (res.err) {
         message.error(res.err);
       } else {
-        message.success('Activity template saved successfully');
+        message.success("Activity template saved successfully");
       }
     } else {
       // if we already have the workspace in the db, just update it.
       if (activity && activity.id) {
-        const updateRes = await handleUpdateWorkspace(
-          activity.id,
-          workspaceRef,
-          studentToolbox
-        );
+        const updateRes = await handleUpdateWorkspace(activity.id, workspaceRef, studentToolbox);
         if (updateRes.err) {
           message.error(updateRes.err);
         } else {
-          message.success('Workspace saved successfully');
+          message.success("Workspace saved successfully");
         }
       }
       // else create a new workspace and update local storage
@@ -180,27 +164,25 @@ export default function ContentCreatorCanvas({
   };
 
   const handleUndo = () => {
-    if (workspaceRef.current.undoStack_.length > 0)
-      workspaceRef.current.undo(false);
+    if (workspaceRef.current.undoStack_.length > 0) workspaceRef.current.undo(false);
   };
 
   const handleRedo = () => {
-    if (workspaceRef.current.redoStack_.length > 0)
-      workspaceRef.current.undo(true);
+    if (workspaceRef.current.redoStack_.length > 0) workspaceRef.current.undo(true);
   };
 
   const handleConsole = async () => {
     if (showPlotter) {
-      message.warning('Close serial plotter before openning serial monitor');
+      message.warning("Close serial plotter before openning serial monitor");
       return;
     }
     // if serial monitor is not shown
     if (!showConsole) {
       // connect to port
-      await handleOpenConnection(9600, 'newLine');
+      await handleOpenConnection(9600, "newLine");
       // if fail to connect to port, return
-      if (typeof window['port'] === 'undefined') {
-        message.error('Fail to select serial device');
+      if (typeof window["port"] === "undefined") {
+        message.error("Fail to select serial device");
         return;
       }
       setConnectionOpen(true);
@@ -218,21 +200,14 @@ export default function ContentCreatorCanvas({
 
   const handlePlotter = async () => {
     if (showConsole) {
-      message.warning('Close serial monitor before openning serial plotter');
+      message.warning("Close serial monitor before openning serial plotter");
       return;
     }
 
     if (!showPlotter) {
-      await handleOpenConnection(
-        9600,
-        'plot',
-        plotData,
-        setPlotData,
-        plotId,
-        forceUpdate
-      );
-      if (typeof window['port'] === 'undefined') {
-        message.error('Fail to select serial device');
+      await handleOpenConnection(9600, "plot", plotData, setPlotData, plotId, forceUpdate);
+      if (typeof window["port"] === "undefined") {
+        message.error("Fail to select serial device");
         return;
       }
       setConnectionOpen(true);
@@ -249,18 +224,16 @@ export default function ContentCreatorCanvas({
 
   const handleCompile = async () => {
     if (showConsole || showPlotter) {
-      message.warning(
-        'Close Serial Monitor and Serial Plotter before uploading your code'
-      );
+      message.warning("Close Serial Monitor and Serial Plotter before uploading your code");
     } else {
-      if (typeof window['port'] === 'undefined') {
+      if (typeof window["port"] === "undefined") {
         await connectToPort();
       }
-      if (typeof window['port'] === 'undefined') {
-        message.error('Fail to select serial device');
+      if (typeof window["port"] === "undefined") {
+        message.error("Fail to select serial device");
         return;
       }
-      setCompileError('');
+      setCompileError("");
       await compileArduinoCode(
         workspaceRef.current,
         setSelectedCompile,
@@ -273,8 +246,8 @@ export default function ContentCreatorCanvas({
 
   const menu = (
     <Menu>
-      <Menu.Item id='menu-save' onClick={handleCreatorSave}>
-        <i className='fa fa-save' />
+      <Menu.Item id="menu-save" onClick={handleCreatorSave}>
+        <i className="fa fa-save" />
         &nbsp; Save
       </Menu.Item>
       <SaveAsModal
@@ -296,137 +269,110 @@ export default function ContentCreatorCanvas({
         <PlotterLogo />
         &nbsp; Show Serial Plotter
       </Menu.Item>
-      <CodeModal title={'XML'} workspaceRef={workspaceRef.current} />
+      <CodeModal title={"XML"} workspaceRef={workspaceRef.current} />
       <Menu.Item>
-        <CodeModal title={'Arduino Code'} workspaceRef={workspaceRef.current} />
+        <CodeModal title={"Arduino Code"} workspaceRef={workspaceRef.current} />
       </Menu.Item>
     </Menu>
   );
+  
+  const handleNewBlock = () => {
+    console.log("new block");
+    setShowNewBlockModal(true);
+  }
 
   return (
-    <div id='horizontal-container' className='flex flex-column'>
-      <div className='flex flex-row'>
-        <div
-          id='bottom-container'
-          className='flex flex-column vertical-container overflow-visible'
-        >
+    <div id="horizontal-container" className="flex flex-column">
+      <div className="flex flex-row">
+        <div id="bottom-container" className="flex flex-column vertical-container overflow-visible">
           <Spin
-            tip='Compiling Code Please Wait... It may take up to 20 seconds to compile your code.'
-            className='compilePop'
-            size='large'
-            spinning={selectedCompile}
-          >
-            <Row id='icon-control-panel'>
-              <Col flex='none' id='section-header'>
+            tip="Compiling Code Please Wait... It may take up to 20 seconds to compile your code."
+            className="compilePop"
+            size="large"
+            spinning={selectedCompile}>
+            <Row id="icon-control-panel">
+              <Col flex="none" id="section-header">
                 {activity.lesson_module_name
                   ? `${activity.lesson_module_name} - Activity ${activity.number} - ${
-                      isMentorActivity ? 'Activity' : 'Activity Level'
+                      isMentorActivity ? "Activity" : "Activity Level"
                     } Template`
                   : activity.name
                   ? `Workspace: ${activity.name}`
-                  : 'New Workspace!'}
+                  : "New Workspace!"}
               </Col>
-              <Col flex='auto'>
-                <Row align='middle' justify='end' id='description-container'>
-                  <Col flex={'30px'}>
-                    <button
-                      onClick={handleGoBack}
-                      id='link'
-                      className='flex flex-column'
-                    >
-                      <i id='icon-btn' className='fa fa-arrow-left' />
+              <Col flex="auto">
+                <Row align="middle" justify="end" id="description-container">
+                  <Col flex={"30px"}>
+                    <button onClick={handleGoBack} id="link" className="flex flex-column">
+                      <i id="icon-btn" className="fa fa-arrow-left" />
                     </button>
                   </Col>
-                  <Col flex='auto' />
+                  <Col flex="auto" />
                   <Row>
-                    <Col className='flex flex-row'>
-                      <Col
-                        className='flex flex-row'
-                        id='save-dropdown-container'
-                      >
+                    <Col className="flex flex-row">
+                      <Col className="flex flex-row" id="save-dropdown-container">
                         <Dropdown overlay={menu}>
-                          <i id='save-icon-btn' className='fa fa-save' />
+                          <i id="save-icon-btn" className="fa fa-save" />
                         </Dropdown>
-                        <i className='fas fa-angle-down' id='caret'></i>
+                        <i className="fas fa-angle-down" id="caret"></i>
                       </Col>
                     </Col>
-                    <Col className='flex flex-row' id='redo-undo-container'>
-                      <button
-                        onClick={handleUndo}
-                        id='link'
-                        className='flex flex-column'
-                      >
+                    <Col className="flex flex-row" id="redo-undo-container">
+                      <button onClick={handleUndo} id="link" className="flex flex-column">
                         <i
-                          id='icon-btn'
-                          className='fa fa-undo-alt'
+                          id="icon-btn"
+                          className="fa fa-undo-alt"
                           style={
                             workspaceRef.current
                               ? workspaceRef.current.undoStack_.length < 1
-                                ? { color: 'grey', cursor: 'default' }
+                                ? { color: "grey", cursor: "default" }
                                 : null
                               : null
                           }
                           onMouseEnter={() => setHoverUndo(true)}
                           onMouseLeave={() => setHoverUndo(false)}
                         />
-                        {hoverUndo && (
-                          <div className='popup ModalCompile4'>Undo</div>
-                        )}
+                        {hoverUndo && <div className="popup ModalCompile4">Undo</div>}
                       </button>
-                      <button
-                        onClick={handleRedo}
-                        id='link'
-                        className='flex flex-column'
-                      >
+                      <button onClick={handleRedo} id="link" className="flex flex-column">
                         <i
-                          id='icon-btn'
-                          className='fa fa-redo-alt'
+                          id="icon-btn"
+                          className="fa fa-redo-alt"
                           style={
                             workspaceRef.current
                               ? workspaceRef.current.redoStack_.length < 1
-                                ? { color: 'grey', cursor: 'default' }
+                                ? { color: "grey", cursor: "default" }
                                 : null
                               : null
                           }
                           onMouseEnter={() => setHoverRedo(true)}
                           onMouseLeave={() => setHoverRedo(false)}
                         />
-                        {hoverRedo && (
-                          <div className='popup ModalCompile4'>Redo</div>
-                        )}
+                        {hoverRedo && <div className="popup ModalCompile4">Redo</div>}
                       </button>
                     </Col>
-                    <Col className='flex flex-row'>
-                      <div
-                        id='action-btn-container'
-                        className='flex space-around'
-                      >
+                    <Col className="flex flex-row">
+                      <div id="action-btn-container" className="flex space-around">
                         <ArduinoLogo
                           setHoverCompile={setHoverCompile}
                           handleCompile={handleCompile}
                         />
                         {hoverCompile && (
-                          <div className='popup ModalCompile'>
-                            Upload to Arduino
-                          </div>
+                          <div className="popup ModalCompile">Upload to Arduino</div>
                         )}
-                  <DisplayDiagramModal
-                      image={activity.images}
-                    />
+                        <DisplayDiagramModal image={activity.images} />
                         <i
                           onClick={() => handleConsole()}
-                          className='fas fa-terminal hvr-info'
-                          style={{ marginLeft: '6px' }}
+                          className="fas fa-terminal hvr-info"
+                          style={{ marginLeft: "6px" }}
                           onMouseEnter={() => setHoverConsole(true)}
                           onMouseLeave={() => setHoverConsole(false)}
                         />
                         {hoverConsole && (
-                          <div className='popup ModalCompile'>
-                            Show Serial Monitor
-                          </div>
+                          <div className="popup ModalCompile">Show Serial Monitor</div>
                         )}
                         <Dropdown overlay={menuShow}>
-                          <i className='fas fa-ellipsis-v'></i>
+                          <i className="fas fa-ellipsis-v"></i>
                         </Dropdown>
                       </div>
                     </Col>
@@ -434,23 +380,26 @@ export default function ContentCreatorCanvas({
                 </Row>
               </Col>
             </Row>
-            <div id='blockly-canvas' />
+            <div id="blockly-canvas" />
           </Spin>
         </div>
         {!isMentorActivity && (
-          <StudentToolboxMenu
-            activity={activity}
-            studentToolbox={studentToolbox}
-            setStudentToolbox={setStudentToolbox}
-            openedToolBoxCategories={openedToolBoxCategories}
-            setOpenedToolBoxCategories={setOpenedToolBoxCategories}
-          />
+          <div className="flex flex-column">
+            <StudentToolboxMenu
+              activity={activity}
+              studentToolbox={studentToolbox}
+              setStudentToolbox={setStudentToolbox}
+              openedToolBoxCategories={openedToolBoxCategories}
+              setOpenedToolBoxCategories={setOpenedToolBoxCategories}
+            />
+            <button className="btn new-block__btn" onClick={handleNewBlock}>Create New Block</button>
+            <NewBlockModal visible={showNewBlockModal} setVisible={setShowNewBlockModal} />
+          </div>
         )}
         <ConsoleModal
           show={showConsole}
           connectionOpen={connectionOpen}
-          setConnectionOpen={setConnectionOpen}
-        ></ConsoleModal>
+          setConnectionOpen={setConnectionOpen}></ConsoleModal>
         <PlotterModal
           show={showPlotter}
           connectionOpen={connectionOpen}
@@ -462,24 +411,18 @@ export default function ContentCreatorCanvas({
       </div>
 
       {/* This xml is for the blocks' menu we will provide. Here are examples on how to include categories and subcategories */}
-      <xml id='toolbox' is='Blockly workspace'>
+      <xml id="toolbox" is="Blockly workspace">
         {
           // Maps out block categories
           activity &&
             activity.toolbox &&
             activity.toolbox.map(([category, blocks]) => (
-              <category name={category} is='Blockly category' key={category}>
+              <category name={category} is="Blockly category" key={category}>
                 {
                   // maps out blocks in category
                   // eslint-disable-next-line
                   blocks.map((block) => {
-                    return (
-                      <block
-                        type={block.name}
-                        is='Blockly block'
-                        key={block.name}
-                      />
-                    );
+                    return <block type={block.name} is="Blockly block" key={block.name} />;
                   })
                 }
               </category>
@@ -490,10 +433,9 @@ export default function ContentCreatorCanvas({
       {compileError && (
         <Alert
           message={compileError}
-          type='error'
+          type="error"
           closable
-          onClose={(e) => setCompileError('')}
-        ></Alert>
+          onClose={(e) => setCompileError("")}></Alert>
       )}
     </div>
   );
