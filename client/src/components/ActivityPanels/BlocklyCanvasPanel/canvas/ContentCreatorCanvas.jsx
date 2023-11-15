@@ -303,7 +303,7 @@ export default function ContentCreatorCanvas({
 
   return (
     <div id="horizontal-container" className="flex flex-column">
-      <div className="flex flex-row">
+      <div className="flex flex-row"> 
         <div id="bottom-container" className="flex flex-column vertical-container overflow-visible">
           <Spin
             tip="Compiling Code Please Wait... It may take up to 20 seconds to compile your code."
@@ -401,7 +401,7 @@ export default function ContentCreatorCanvas({
               </Col>
             </Row>
             <div id="blockly-canvas" />
-            <button className="btn new-block__btn" onClick={handleOpenBlockConfigEditor}>Configure Block</button>
+            <button className="btn new-block__btn" style={{ marginTop: '5px' }} onClick={handleOpenBlockConfigEditor}>Configure Block</button>
             {showBlockConfigEditor && (<BlockConfigEditor initialConfig={blockConfig} onSave={handleSaveBlockConfig} onCancel={handleCancelBlockConfig} />)}
           </Spin>
         </div>
@@ -416,7 +416,6 @@ export default function ContentCreatorCanvas({
             />
             <button className="btn new-block__btn" onClick={handleNewBlock}>Create New Block</button>
             <NewBlockModal visible={showNewBlockModal} setVisible={setShowNewBlockModal} />
-        
 
           </div>
         )}
