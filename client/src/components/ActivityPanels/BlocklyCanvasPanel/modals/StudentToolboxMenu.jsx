@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import '../../ActivityLevels.less';
 import { Menu, Checkbox, Input, Switch } from 'antd';
+import './YourComponentStyles.css'; // Import the CSS file with custom styles
 
 export default function StudentToolboxMenu(props) {
   const [searchFilter, setSearchFilter] = useState('');
@@ -8,6 +9,7 @@ export default function StudentToolboxMenu(props) {
   const [selectedToolBoxCategories, setSelectedToolBoxCategories] = useState(
     []
   );
+
   const {
     activity,
     studentToolbox,
@@ -162,14 +164,20 @@ export default function StudentToolboxMenu(props) {
     } else return block.name;
   };
 
+  
+
   return (
-    <div id='side-container'>
+    <div id='side-container'style={{ width: '450px', marginRight: '10px' }}>
       <div>
-        Current Student Toolbox Selection
+    <div style={{ marginBottom: '10px', textAlign: 'center', background: '#5babde', padding: '5px', borderRadius: '20px', width: '300px', marginLeft: '65px', }}>
+      <h2 style={{ color: 'white', fontSize: '1.1em', margin: '0', fontWeight: 'bold'  }}>Current Student Toolbox Selection</h2>
+    </div>
         <Input
+          className="custom-input"
           placeholder='Search Block'
           prefix={<i className='fa fa-search' />}
           onChange={(e) => handleSearchFilterChange(e.target.value)}
+          style={{ borderRadius: '10px', padding: '8px' }}
         />
         <Checkbox
           checked={selectAll}
@@ -183,6 +191,7 @@ export default function StudentToolboxMenu(props) {
           mode='inline'
           openKeys={openedToolBoxCategories}
           onOpenChange={(keys) => setOpenedToolBoxCategories(keys)}
+          
         >
           {
             // Maps out block categories
