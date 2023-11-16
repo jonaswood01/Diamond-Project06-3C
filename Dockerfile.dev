@@ -1,0 +1,27 @@
+# WARNING: Strapi version is outdated, and requires outdated version of Node
+FROM node:14-alpine3.14
+
+# Strapi recommends installing these dependencies
+RUN apk update && \
+    apk add --no-cache build-base gcc autoconf automake \
+    zlib-dev libpng-dev nasm bash vips-dev git
+
+# Using ARG to enable setting new value in docker-compose
+ARG NODE_ENV=development
+ENV NODE_ENV=${NODE_ENV}
+
+# Set the working directory to /usr/src/app
+WORKDIR /usr/src/app
+COPY ./server/package.json ./
+
+# Install the dependencies inside container
+RUN yarn install
+ENV PATH /usr/src/app/node_modules/.bin:$PATH
+
+# Copy the rest of the files to the container, done after yarn install to prevent unnecessary rebuilds
+COPY ./server .
+RUN PUBLIC_URL=/api yarn build
+
+# Expose port to host and specify command to run on container start
+EXPOSE 1337
+CMD ["yarn", "start"]

@@ -3,14 +3,19 @@ version: '3'
 services:
   server:
     container_name: casmm-server-dev
-    image: strapi/strapi
+    # image: strapi/strapi
+    build:
+      context: ./
+      dockerfile: Dockerfile.dev
     restart: always
     environment: 
       - DATABASE_HOST=db
     ports:
       - 1337:1337
     volumes:
-      - ./server:/srv/app
+      # - ./server:/srv/app
+      - ./server:/usr/src/app
+      - casmm-client-build:/usr/src/app/public/client
     depends_on:
       - db
       - compile_queue
@@ -45,12 +50,17 @@ services:
     container_name: casmm-client-dev
     build: 
       context: ./client
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
     ports:
       - 3000:3000
     restart: always
     volumes:
       - ./client/src:/app/client/src
       - ./client/public:/app/client/public
+      - casmm-client-build:/app/client/build
     depends_on:
       - server
+    command: yarn start
+
+volumes:
+  casmm-client-build:
