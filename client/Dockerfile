@@ -18,7 +18,7 @@ RUN yarn --pure-lockfile --force && \
 COPY ./src /app/client/src
 COPY ./public /app/client/public
 
-RUN yarn build
+RUN PUBLIC_URL=/client yarn build
 
-# EXPOSE 3000
-CMD ["yarn", "serve"]
+# Allow other containers to mount to build directory
+VOLUME /app/client/build
