@@ -40,3 +40,17 @@ services:
     container_name: casmm-compile_queue-dev
     image: redis
     restart: always
+  
+  client:
+    container_name: casmm-client-dev
+    build: 
+      context: ./client
+      dockerfile: Dockerfile.dev
+    ports:
+      - 3000:3000
+    restart: always
+    volumes:
+      - ./client/src:/app/client/src
+      - ./client/public:/app/client/public
+    depends_on:
+      - server
