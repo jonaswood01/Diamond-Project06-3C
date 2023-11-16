@@ -31,6 +31,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 3000,
+    host: true, // needed for the Docker Container port mapping to work
     proxy: {
       "/api": {
         target: "http://localhost:1337",
