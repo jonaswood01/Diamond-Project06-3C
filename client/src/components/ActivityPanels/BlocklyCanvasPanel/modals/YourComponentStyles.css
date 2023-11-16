@@ -1,7 +1,7 @@
 /* YourComponentStyles.css */
 
 #side-container {
-    background-color: #ffffff; /* Change the background color */
+    background-color: #F4F4F5; /* Change the background color */
     padding: 10px;
     border-radius: 20px; /* Add rounded corners */
   }
@@ -12,9 +12,10 @@
     border-radius: 20px;
   }
 
-  #menu .ant-menu-submenu-active,
-#menu .ant-menu-item-active {
-  background-color: #5bacde3a;
+  #menu .ant-menu-submenu-active{
+  background-color: #5bacde6e
 }
-
+#menu .ant-menu-item-active {
+  background-color: #5bacde3a
+}
   

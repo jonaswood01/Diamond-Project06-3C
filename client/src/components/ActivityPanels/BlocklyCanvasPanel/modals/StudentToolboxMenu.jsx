@@ -167,10 +167,10 @@ export default function StudentToolboxMenu(props) {
   
 
   return (
-    <div id='side-container'style={{ width: '450px', marginRight: '10px' }}>
+    <div id='side-container'style={{height: '410px', width: '450px', marginRight: '10px' }}>
       <div>
-    <div style={{ marginBottom: '10px', textAlign: 'center', background: '#5babde', padding: '5px', borderRadius: '20px', width: '300px', marginLeft: '65px', }}>
-      <h2 style={{ color: 'white', fontSize: '1.1em', margin: '0', fontWeight: 'bold'  }}>Current Student Toolbox Selection</h2>
+    <div style={{ height: '42px', marginBottom: '10px', textAlign: 'center', background: '#5babde', padding: '5px', borderRadius: '20px', width: '300px', marginLeft: '65px', }}>
+      <h2 style={{ color: 'white', fontSize: '1.2em',  fontWeight: 'bold'  }}> Current Student Toolbox Selection</h2>
     </div>
         <Input
           className="custom-input"
@@ -189,6 +189,7 @@ export default function StudentToolboxMenu(props) {
         <Menu
           id='menu'
           mode='inline'
+          style={{ maxHeight: '410px', overflowY: 'auto' }}  
           openKeys={openedToolBoxCategories}
           onOpenChange={(keys) => setOpenedToolBoxCategories(keys)}
           
