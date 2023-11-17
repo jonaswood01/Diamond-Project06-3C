@@ -24,6 +24,7 @@ import ArduinoLogo from "../Icons/ArduinoLogo";
 import PlotterLogo from "../Icons/PlotterLogo";
 import { useNavigate } from "react-router-dom";
 import NewBlockModal from "./NewBlockModal";
+import BlockConfigEditor from "./BlockConfigEditor";
 
 let plotId = 1;
 
@@ -47,6 +48,8 @@ export default function ContentCreatorCanvas({
   const [studentToolbox, setStudentToolbox] = useState([]);
   const [openedToolBoxCategories, setOpenedToolBoxCategories] = useState([]);
   const [showNewBlockModal, setShowNewBlockModal] = useState(false);
+  const [showBlockConfigEditor, setShowBlockConfigEditor] = useState(false);
+  const [blockConfig, setBlockConfig] = useState({});
 
   const navigate = useNavigate();
   const [forceUpdate] = useReducer((x) => x + 1, 0);
@@ -281,9 +284,26 @@ export default function ContentCreatorCanvas({
     setShowNewBlockModal(true);
   }
 
+  // Function to handle opening the BlockConfigEditor
+  const handleOpenBlockConfigEditor = () => {
+    setShowBlockConfigEditor(true);
+  };
+
+  // Function to handle saving block configuration from BlockConfigEditor
+  const handleSaveBlockConfig = (config) => {
+    console.log("Saved block config:", config);
+    setBlockConfig(config);
+    setShowBlockConfigEditor(false);
+  };
+
+  // Function to handle canceling block configuration in BlockConfigEditor
+  const handleCancelBlockConfig = () => {
+    setShowBlockConfigEditor(false);
+  };
+
   return (
     <div id="horizontal-container" className="flex flex-column">
-      <div className="flex flex-row">
+      <div className="flex flex-row"> 
         <div id="bottom-container" className="flex flex-column vertical-container overflow-visible">
           <Spin
             tip="Compiling Code Please Wait... It may take up to 20 seconds to compile your code."
@@ -381,6 +401,8 @@ export default function ContentCreatorCanvas({
               </Col>
             </Row>
             <div id="blockly-canvas" />
+            <button className="btn new-block__btn" onClick={handleOpenBlockConfigEditor}>Configure Block</button>
+            {showBlockConfigEditor && (<BlockConfigEditor initialConfig={blockConfig} onSave={handleSaveBlockConfig} onCancel={handleCancelBlockConfig} />)}
           </Spin>
         </div>
         {!isMentorActivity && (
@@ -391,9 +413,11 @@ export default function ContentCreatorCanvas({
               setStudentToolbox={setStudentToolbox}
               openedToolBoxCategories={openedToolBoxCategories}
               setOpenedToolBoxCategories={setOpenedToolBoxCategories}
+            
             />
             <button className="btn new-block__btn" onClick={handleNewBlock}>Create New Block</button>
             <NewBlockModal visible={showNewBlockModal} setVisible={setShowNewBlockModal} />
+
           </div>
         )}
         <ConsoleModal
