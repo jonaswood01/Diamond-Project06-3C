@@ -303,8 +303,8 @@ export default function ContentCreatorCanvas({
 
   return (
     <div id="horizontal-container" className="flex flex-column">
-      <div className="flex flex-row"> 
-        <div id="bottom-container" className="flex flex-column vertical-container overflow-visible">
+      <div className="flex flex-row" style={{ height: '700px'}} > 
+        <div id="bottom-container" className="flex flex-column vertical-container overflow-visible"style={{ height: '800px'}}>
           <Spin
             tip="Compiling Code Please Wait... It may take up to 20 seconds to compile your code."
             className="compilePop"
@@ -401,13 +401,12 @@ export default function ContentCreatorCanvas({
               </Col>
             </Row>
             <div id="blockly-canvas" />
-            <button className="btn new-block__btn" onClick={handleOpenBlockConfigEditor}>Configure Block</button>
-            {showBlockConfigEditor && (<BlockConfigEditor initialConfig={blockConfig} onSave={handleSaveBlockConfig} onCancel={handleCancelBlockConfig} />)}
+            
           </Spin>
         </div>
         {!isMentorActivity && (
           <div className="flex flex-column">
-            {!showNewBlockModal && (
+            {!showNewBlockModal && !showBlockConfigEditor &&(
         <StudentToolboxMenu
           activity={activity}
           studentToolbox={studentToolbox}
@@ -416,10 +415,10 @@ export default function ContentCreatorCanvas({
           setOpenedToolBoxCategories={setOpenedToolBoxCategories}
         />
       )}
-             {!showNewBlockModal && (
-             <button className="btn new-block__btn" style={{ margin: '1px' , marginLeft: '40px'}}  onClick={handleNewBlock}>Create New Block</button>
-             )}
-            {showNewBlockModal && (
+          {!showNewBlockModal && !showBlockConfigEditor &&(
+            <button className="btn new-block__btn" style={{ margin: '1px' , marginLeft: '5px', width: '220px'}}  onClick={handleNewBlock}>Create New Block</button>
+          )}
+            {showNewBlockModal && !showBlockConfigEditor &&(
             <NewBlockModal
               handleCancelCb={() => setShowNewBlockModal(false)}
               handleOkCb={(values) => {
@@ -431,6 +430,10 @@ export default function ContentCreatorCanvas({
               setVisible={setShowNewBlockModal}
             />
           )}
+          {!showNewBlockModal && !showBlockConfigEditor &&(
+             <button className="btn new-block__btn"style={{ margin: '1px' , marginLeft: '230px', width: '220px', marginTop: '-58px'}} onClick={handleOpenBlockConfigEditor}>Configure Block</button>
+          )}
+          {showBlockConfigEditor && (<BlockConfigEditor initialConfig={blockConfig} onSave={handleSaveBlockConfig} onCancel={handleCancelBlockConfig} />)}
 
           </div>
         )}

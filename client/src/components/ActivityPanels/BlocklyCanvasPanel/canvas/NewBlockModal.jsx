@@ -20,7 +20,7 @@ export default function NewBlockModal({ handleCancelCb, handleOkCb, visible, set
     <div
       style={{
         display: visible ? 'block' : 'none',
-        backgroundColor: 'white',
+        backgroundColor: '#F4F4F5',
         padding: '20px',
         borderRadius: '20px',
         width: '450px',
@@ -31,7 +31,7 @@ export default function NewBlockModal({ handleCancelCb, handleOkCb, visible, set
       {/* Customized title */}
       <div style={{ height: '50px', marginBottom: '10px', textAlign: 'center', background: '#5babde', padding: '5px', borderRadius: '20px', width: '350px', marginLeft: '30px', }}>
         <h2 style={{ marginTop: '5px', color: 'white', fontSize: '1.2em',  fontWeight: 'bold' }}>
-          Create New BLock
+          Create New Block
         </h2>
       </div>
       <Form form={form} onFinish={handleSubmit} layout="vertical">
