@@ -63,9 +63,6 @@ export default function ContentCreatorCanvas({
     let xml = window.Blockly.Xml.textToDom(activityRef.current.template);
     window.Blockly.Xml.domToWorkspace(xml, workspaceRef.current);
     workspaceRef.current.clearUndo();
-
-    // workspaceRef.current.clear();
-    // workspaceRef.current.updateToolbox(document.getElementById("toolbox"));
   };
 
   const setWorkspace = () => {
@@ -307,40 +304,36 @@ export default function ContentCreatorCanvas({
     setShowBlockConfigEditor(true);
   };
 
-  const storeCustomBlock = (name, config, generatorStub, description) => {
-    Blockly.Blocks["custom_block_2"] = {
+  const storeCustomBlock = (config, generatorStub) => {
+    // const json = JSON.stringify(config);
+    // const blockType = JSON.parse(json)
+    const blockType = config.type;
+    console.log("config", config);
+    console.log("blockType", blockType);
+
+    Blockly.Blocks[blockType] = {
       init: function () {
-        this.appendDummyInput().appendField("Another custom block");
-        this.appendValueInput("text_input")
-          .setCheck("Number")
-          .setAlign(Blockly.ALIGN_RIGHT)
-          .appendField("angle:")
-          .appendField(new Blockly.FieldAngle(90), "NAME");
-        this.setInputsInline(true);
-        this.setPreviousStatement(true, null);
-        this.setNextStatement(true, null);
-        this.setColour(300);
-        this.setTooltip("Another custom block");
-        this.setHelpUrl("");
+        this.jsonInit({ ...config, type: blockType });
+        let block = this;
+        this.setTooltip(() => {
+          return blockType;
+        });
       },
     };
 
-    setCustomBlocks([...customBlocks, { name: "custom_block_2" }]);
-    
+    setCustomBlocks([...customBlocks, { name: blockType }]);
+
     const categories = activity.toolbox.map(([category, blocks]) => category);
 
     if (!categories.includes("Custom Blocks")) {
       setActivity({
         ...activity,
-        toolbox: [
-          ...activity.toolbox,
-          ["Custom Blocks", [...customBlocks, { name: "custom_block_2" }]],
-        ],
+        toolbox: [...activity.toolbox, ["Custom Blocks", [...customBlocks, { name: blockType }]]],
       });
     } else {
       const newToolbox = activity.toolbox.map(([category, blocks]) => {
         if (category === "Custom Blocks") {
-          return ["Custom Blocks", [...blocks, { name: "custom_block_2" }]];
+          return ["Custom Blocks", [...blocks, { name: blockType }]];
         } else {
           return [category, blocks];
         }
@@ -350,20 +343,13 @@ export default function ContentCreatorCanvas({
   };
 
   // Function to handle saving block configuration from BlockConfigEditor
-  const handleSaveBlockConfig = (name, config, generatorStub) => {
-    console.log(
-      "Saved block name: ",
-      name,
-      " config: ",
-      config,
-      " generator stub: ",
-      generatorStub
-    );
+  const handleSaveBlockConfig = (config, generatorStub) => {
+    console.log(" config: ", config, " generator stub: ", generatorStub);
     setBlockConfig(config);
     setShowBlockConfigEditor(false);
     setShowCustomBar(true);
 
-    storeCustomBlock(name, config, generatorStub, "description coming soon...");
+    storeCustomBlock(config, generatorStub);
 
     rerenderWorkspace();
   };
