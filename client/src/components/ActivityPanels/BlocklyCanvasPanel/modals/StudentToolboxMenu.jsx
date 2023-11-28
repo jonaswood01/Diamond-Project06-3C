@@ -148,7 +148,7 @@ export default function StudentToolboxMenu(props) {
       setStudentToolbox([...studentToolbox, blockName]);
     }
   };
-
+    
   const renderImage = (block) => {
     if (block.image_url) {
       return (

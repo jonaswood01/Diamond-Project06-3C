@@ -1,0 +1,20 @@
+{
+  "kind": "collectionType",
+  "collectionName": "proves",
+  "info": {
+    "name": "prove"
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "prove2": {
+      "type": "decimal"
+    },
+    "provce3": {
+      "type": "integer"
+    }
+  }
+}

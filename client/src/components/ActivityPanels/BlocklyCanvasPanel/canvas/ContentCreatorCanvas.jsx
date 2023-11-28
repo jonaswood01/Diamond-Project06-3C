@@ -281,6 +281,17 @@ export default function ContentCreatorCanvas({
     setShowNewBlockModal(true);
   }
 
+//clear the working space
+  const handleTrashbin = () => {
+    if (workspaceRef.current.undoStack_.length >= 0) workspaceRef.current.clear(false);
+  };
+  const useTrashCan = () => 
+  {
+    console.log("im working");
+    handleTrashbin(true);
+  }
+
+
   return (
     <div id="horizontal-container" className="flex flex-column">
       <div className="flex flex-row">
@@ -391,9 +402,12 @@ export default function ContentCreatorCanvas({
               setStudentToolbox={setStudentToolbox}
               openedToolBoxCategories={openedToolBoxCategories}
               setOpenedToolBoxCategories={setOpenedToolBoxCategories}
+              
             />
             <button className="btn new-block__btn" onClick={handleNewBlock}>Create New Block</button>
+           
             <NewBlockModal visible={showNewBlockModal} setVisible={setShowNewBlockModal} />
+            
           </div>
         )}
         <ConsoleModal
@@ -408,9 +422,11 @@ export default function ContentCreatorCanvas({
           setPlotData={setPlotData}
           plotId={plotId}
         />
+         
       </div>
 
       {/* This xml is for the blocks' menu we will provide. Here are examples on how to include categories and subcategories */}
+      <button className="trash_can" onClick={useTrashCan}>trashbin bottom</button>
       <xml id="toolbox" is="Blockly workspace">
         {
           // Maps out block categories
