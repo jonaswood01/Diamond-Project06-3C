@@ -13,7 +13,7 @@ const BlockConfigEditor = ({ initialConfig, onSave, onCancel }) => {
   };
 
   return (
-    <div>
+    <div className="blockConfig">
       <textarea
        value={name}
        onChange={(e) => setName(e.target.value)}
@@ -35,7 +35,7 @@ const BlockConfigEditor = ({ initialConfig, onSave, onCancel }) => {
         onChange={(e) => setGeneratorStub(e.target.value)}
         placeholder="Type Generator Stub here..."  // Placeholder text
         rows={10}
-        cols={150}  // Adjust the column value to make the textarea wider
+        cols={60}  // Adjust the column value to make the textarea wider
         style={{ borderRadius: '8px', padding: '8px', border: '2px solid #5babde', }}  // Rounded corners and padding
       />
     
