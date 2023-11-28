@@ -1,31 +1,42 @@
 import React, { useState } from "react";
 
 const BlockConfigEditor = ({ initialConfig, onSave, onCancel }) => {
+  const [name, setName] = useState("");
   const [config, setConfig] = useState("");
+  const [generatorStub, setGeneratorStub] = useState("");
 
  
 
   const handleSave = () => {
-    
-    onSave(config);
+    // Implement validation or additional logic if needed
+    onSave(name, config, generatorStub);
   };
 
   return (
     <div>
-    <div style={{ backgroundColor:  '#F4F4F5', padding: '15px', borderRadius: '20px',  width: '450px', marginRight: '10px' }}>
-
-      <div style={{ height: '50px', marginBottom: '10px', textAlign: 'center', background: '#5babde', padding: '5px', borderRadius: '20px', width: '350px', marginLeft: '30px', }}>
-      <h2 style={{ marginTop: '5px', color: 'white', fontSize: '1.2em', fontWeight: 'bold' }}>
-        Configure New Block
-      </h2>
-    </div>
       <textarea
-        value={config}
-        onChange={(e) => setConfig(e.target.value)}
-        placeholder="Type your configuration here..."  // Placeholder text
-        rows={17}
-        cols={60}  
-        style={{ borderRadius: '20px', padding: '8px', border: '2px solid #5babde', width: '100%' }} 
+       value={name}
+       onChange={(e) => setName(e.target.value)}
+       placeholder="Type Block Name here..."  // Placeholder text
+       rows={1}
+       cols={60}  // Adjust the column value to make the textarea wider
+       style={{ borderRadius: '8px', padding: '8px', border: '2px solid #5babde', }}  // Rounded corners and padding
+      />
+      <textarea
+       value={config}
+       onChange={(e) => setConfig(e.target.value)}
+       placeholder="Type Block Definition here..."  // Placeholder text
+       rows={10}
+       cols={60}  // Adjust the column value to make the textarea wider
+       style={{ borderRadius: '8px', padding: '8px', border: '2px solid #5babde', }}  // Rounded corners and padding
+      />
+      <textarea
+        value={generatorStub}
+        onChange={(e) => setGeneratorStub(e.target.value)}
+        placeholder="Type Generator Stub here..."  // Placeholder text
+        rows={10}
+        cols={150}  // Adjust the column value to make the textarea wider
+        style={{ borderRadius: '8px', padding: '8px', border: '2px solid #5babde', }}  // Rounded corners and padding
       />
     
       <button
@@ -58,7 +69,7 @@ const BlockConfigEditor = ({ initialConfig, onSave, onCancel }) => {
       </button>
 
       </div>
-    </div>
+
   );
 };
 
