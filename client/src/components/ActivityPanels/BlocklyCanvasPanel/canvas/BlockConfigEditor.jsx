@@ -1,20 +1,22 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 
 const BlockConfigEditor = ({ initialConfig, onSave, onCancel }) => {
   // const [name, setName] = useState("");
-  const [config, setConfig] = useState("");
-  const [generatorStub, setGeneratorStub] = useState("");
+  const config = useRef(null);
+  const generatorStub = useRef(null);
 
   const handleSave = (e) => {
     e.preventDefault();
+    let configData = config.current.value;
+    let generatorStubData = generatorStub.current.value;
 
     // let parsedConfig = JSON.parse(config);
-    let parsedConfig = config.replace(/'/g, '"');
+    let parsedConfig = configData.replace(/'/g, '"');
     parsedConfig = JSON.parse(parsedConfig);
     console.log("parsed config", parsedConfig);
 
     // Implement validation or additional logic if needed
-    onSave(parsedConfig, generatorStub);
+    onSave(parsedConfig, generatorStubData);
   };
 
   return (
@@ -44,7 +46,8 @@ const BlockConfigEditor = ({ initialConfig, onSave, onCancel }) => {
         </div>
         <form onSubmit={handleSave}>
           <textarea
-            value={config}
+            ref={config}
+            id="config"
             // onChange={(e) => setConfig(e.target.value)}
             placeholder="Type Block Definition here..." // Placeholder text
             rows={10}
@@ -57,8 +60,9 @@ const BlockConfigEditor = ({ initialConfig, onSave, onCancel }) => {
             }}
           />
           <textarea
-            value={generatorStub}
             // onChange={(e) => setGeneratorStub(e.target.value)}
+            ref={generatorStub}
+            id="generatorStub"
             placeholder="Type Generator Stub here..." // Placeholder text
             rows={10}
             cols={60} // Adjust the column value to make the textarea wider

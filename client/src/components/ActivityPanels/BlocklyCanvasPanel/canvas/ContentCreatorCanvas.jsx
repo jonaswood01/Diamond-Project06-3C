@@ -75,6 +75,21 @@ export default function ContentCreatorCanvas({
         workspaceRef.current.updateToolbox(document.getElementById("toolbox"));
       }
     });
+    
+    // workspaceRef.current.registerToolboxCategoryCallback("CUSTOM_BLOCKS", () => {
+    //   return customBlocks.map((block) => {
+    //     return {
+    //       kind: "BLOCK",
+    //       blockxml: `<block type="${block.name}"></block>`,
+    //     };
+    //   });
+    // });
+    
+    // setCustomBlocks(getCustomBlocks());
+    
+    const savedCustomBlocks = getCustomBlocks();
+    console.log("savedCustomBlocks", savedCustomBlocks);
+    setCustomBlocks(savedCustomBlocks);
   };
 
   const loadSave = async (workspaceId) => {
@@ -303,6 +318,14 @@ export default function ContentCreatorCanvas({
   const handleOpenBlockConfigEditor = () => {
     setShowBlockConfigEditor(true);
   };
+  
+  const getCustomBlocks = () => {
+    const customBlocks = [];
+    
+    // TODO: get the custom blocks from the database
+    
+    return customBlocks;
+  }
 
   const storeCustomBlock = (config, generatorStub) => {
     // const json = JSON.stringify(config);
@@ -340,6 +363,8 @@ export default function ContentCreatorCanvas({
       });
       setActivity({ ...activity, toolbox: newToolbox });
     }
+    
+    // TODO: store the custom block in the database
   };
 
   // Function to handle saving block configuration from BlockConfigEditor
