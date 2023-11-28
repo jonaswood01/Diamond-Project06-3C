@@ -50,106 +50,167 @@ export default function ContentCreatorCanvas({
   const [showNewBlockModal, setShowNewBlockModal] = useState(false);
   const [showBlockConfigEditor, setShowBlockConfigEditor] = useState(false);
   const [showCustomBar, setShowCustomBar] = useState(false);
+  const [customBlocks, setCustomBlocks] = useState([]);
   const [blockConfig, setBlockConfig] = useState({});
-  const [myCustomBlocks, setMyCustomBlocks] = useState(['brandon_sample_custom', 'custom_block_2', 'custom_block_3']);
-  const [customBlockIndex, setCustomBlockIndex] = useState(0);
+  // const [myCustomBlocks, setMyCustomBlocks] = useState(['brandon_sample_custom', 'custom_block_2', 'custom_block_3']);
+  // const [customBlocks, setCustomBlocks] = useState([]);
+  // const [customBlockIndex, setCustomBlockIndex] = useState(0);
 
   const navigate = useNavigate();
   const [forceUpdate] = useReducer((x) => x + 1, 0);
   const workspaceRef = useRef(null);
   const activityRef = useRef(null);
 
+  const rerenderWorkspace = () => {
+    workspaceRef.current.clear();
+    let xml = window.Blockly.Xml.textToDom(activityRef.current.template);
+    window.Blockly.Xml.domToWorkspace(xml, workspaceRef.current);
+    workspaceRef.current.clearUndo();
+    
+    // workspaceRef.current.clear();
+    // workspaceRef.current.updateToolbox(document.getElementById("toolbox"));
+  };
+
   const setWorkspace = () => {
     workspaceRef.current = window.Blockly.inject("blockly-canvas", {
       toolbox: document.getElementById("toolbox"),
     });
-    handleSaveBlockConfig(null, null, null);
-    Blockly.Blocks['brandon_sample_custom'] = {
-      init: function() {
-        this.appendDummyInput()
-            .appendField("This is a sample custom block")
-            .appendField(new Blockly.FieldCheckbox("TRUE"), "NAME")
-            .appendField(new Blockly.FieldColour("#ff0000"), "NAME");
-        this.appendValueInput("text_input")
-            .setCheck("String")
-            .setAlign(Blockly.ALIGN_RIGHT)
-            .appendField("text_input");
-        this.appendValueInput("number_input")
-            .setCheck("Number")
-            .setAlign(Blockly.ALIGN_RIGHT)
-            .appendField("number_input");
-        this.appendValueInput("boolean_input")
-            .setCheck("Boolean")
-            .setAlign(Blockly.ALIGN_RIGHT)
-            .appendField("boolean_input");
-        this.setOutput(true, null);
-        this.setColour(45);
-        this.setTooltip("A sample custom block");
-        this.setHelpUrl("");
+
+    workspaceRef.current.addChangeListener((event) => {
+      // let toolbox = document.getElementById("toolbox");
+      // workspaceRef.current.updateToolbox(toolbox);
+
+      // if (event.type === "ui" && event.element === "category") {
+      //   if (event.newValue) {
+      //     setOpenedToolBoxCategories([...openedToolBoxCategories, event.newValue]);
+      //   } else {
+      //     setOpenedToolBoxCategories(
+      //       openedToolBoxCategories.filter((category) => category !== event.oldValue)
+      //     );
+      //   }
+      // }
+      console.log("event", event);
+      if (event.type === "create") {
+        // let xml = window.Blockly.Xml.textToDom(activityRef.current.template);
+        // window.Blockly.Xml.domToWorkspace(xml, workspaceRef.current);
+
+        // let toolbox = document.getElementById("toolbox");
+        // workspaceRef.current.updateToolbox(toolbox);
+        // window.Blockly.updateToolbox(toolbox);
+        
+        // workspaceRef.current.clear();
+        workspaceRef.current.updateToolbox(document.getElementById("toolbox"));
+        // let xml = window.Blockly.Xml.textToDom(activityRef.current.template);
+        // window.Blockly.Xml.domToWorkspace(xml, workspaceRef.current);
+        // workspaceRef.current.clearUndo();
+        
+        // console.log("toolbox", toolbox);
+        // console.log("workspaceRef.current", workspaceRef.current);
+        // setWorkspace();
+        // window.Blockly.updateToolbox(toolbox);
       }
-    };
+    });
 
-    Blockly.Arduino['brandon_sample_custom'] = function(block) {
-      var checkbox_name = block.getFieldValue('NAME') == 'TRUE';
-      var colour_name = block.getFieldValue('NAME');
-      var value_text_input = Blockly.Arduino.valueToCode(block, 'text_input', Blockly.Arduino.ORDER_ATOMIC);
-      var value_number_input = Blockly.Arduino.valueToCode(block, 'number_input', Blockly.Arduino.ORDER_ATOMIC);
-      var value_boolean_input = Blockly.Arduino.valueToCode(block, 'boolean_input', Blockly.Arduino.ORDER_ATOMIC);
-      // TODO: Assemble Arduino into code variable.
-      var code = '...';
-      // TODO: Change ORDER_NONE to the correct strength.
-      return [code, Blockly.Arduino.ORDER_NONE];
-    };
+    // workspaceRef.current.registerToolboxCategoryCallback(
+    //   "CUSTOM_BLOCKS",
+    //   function(workspace) {
+    //     var xmlList = [];
+    //     // var customBlocks = getCustomBlocks();
+    //     console.log("customBlocks", customBlocks);
+    //     customBlocks.forEach((block) => {
+    //       xmlList.push(window.Blockly.Xml.textToDom(block));
+    //     });
+    //     return xmlList;
+    //   }
+    // )
+
+    // handleSaveBlockConfig(null, null, null);
+    //   Blockly.Blocks['brandon_sample_custom'] = {
+    //     init: function() {
+    //       this.appendDummyInput()
+    //           .appendField("This is a sample custom block")
+    //           .appendField(new Blockly.FieldCheckbox("TRUE"), "NAME")
+    //           .appendField(new Blockly.FieldColour("#ff0000"), "NAME");
+    //       this.appendValueInput("text_input")
+    //           .setCheck("String")
+    //           .setAlign(Blockly.ALIGN_RIGHT)
+    //           .appendField("text_input");
+    //       this.appendValueInput("number_input")
+    //           .setCheck("Number")
+    //           .setAlign(Blockly.ALIGN_RIGHT)
+    //           .appendField("number_input");
+    //       this.appendValueInput("boolean_input")
+    //           .setCheck("Boolean")
+    //           .setAlign(Blockly.ALIGN_RIGHT)
+    //           .appendField("boolean_input");
+    //       this.setOutput(true, null);
+    //       this.setColour(45);
+    //       this.setTooltip("A sample custom block");
+    //       this.setHelpUrl("");
+    //     }
+    //   };
+
+    //   Blockly.Arduino['brandon_sample_custom'] = function(block) {
+    //     var checkbox_name = block.getFieldValue('NAME') == 'TRUE';
+    //     var colour_name = block.getFieldValue('NAME');
+    //     var value_text_input = Blockly.Arduino.valueToCode(block, 'text_input', Blockly.Arduino.ORDER_ATOMIC);
+    //     var value_number_input = Blockly.Arduino.valueToCode(block, 'number_input', Blockly.Arduino.ORDER_ATOMIC);
+    //     var value_boolean_input = Blockly.Arduino.valueToCode(block, 'boolean_input', Blockly.Arduino.ORDER_ATOMIC);
+    //     // TODO: Assemble Arduino into code variable.
+    //     var code = '...';
+    //     // TODO: Change ORDER_NONE to the correct strength.
+    //     return [code, Blockly.Arduino.ORDER_NONE];
+    //   };
   };
 
-  Blockly.Blocks['custom_block_2'] = {
-    init: function() {
-      this.appendDummyInput()
-          .appendField("Another custom block");
-      this.appendValueInput("text_input")
-          .setCheck("Number")
-          .setAlign(Blockly.ALIGN_RIGHT)
-          .appendField("angle:")
-          .appendField(new Blockly.FieldAngle(90), "NAME");
-      this.setInputsInline(true);
-      this.setPreviousStatement(true, null);
-      this.setNextStatement(true, null);
-      this.setColour(300);
-      this.setTooltip("Another custom block");
-      this.setHelpUrl("");
-    }
-  };
+  // Blockly.Blocks['custom_block_2'] = {
+  //   init: function() {
+  //     this.appendDummyInput()
+  //         .appendField("Another custom block");
+  //     this.appendValueInput("text_input")
+  //         .setCheck("Number")
+  //         .setAlign(Blockly.ALIGN_RIGHT)
+  //         .appendField("angle:")
+  //         .appendField(new Blockly.FieldAngle(90), "NAME");
+  //     this.setInputsInline(true);
+  //     this.setPreviousStatement(true, null);
+  //     this.setNextStatement(true, null);
+  //     this.setColour(300);
+  //     this.setTooltip("Another custom block");
+  //     this.setHelpUrl("");
+  //   }
+  // };
 
-  Blockly.Arduino['custom_block_2'] = function(block) {
-    var angle_name = block.getFieldValue('NAME');
-    var value_text_input = Blockly.Arduino.valueToCode(block, 'text_input', Blockly.Arduino.ORDER_ATOMIC);
-    // TODO: Assemble Arduino into code variable.
-    var code = '...;\n';
-    return code;
-  };
+  // Blockly.Arduino['custom_block_2'] = function(block) {
+  //   var angle_name = block.getFieldValue('NAME');
+  //   var value_text_input = Blockly.Arduino.valueToCode(block, 'text_input', Blockly.Arduino.ORDER_ATOMIC);
+  //   // TODO: Assemble Arduino into code variable.
+  //   var code = '...;\n';
+  //   return code;
+  // };
 
-  Blockly.Blocks['custom_block_3'] = {
-    init: function() {
-      this.appendDummyInput()
-          .appendField("Custom Block 3");
-      this.appendValueInput("NAME")
-          .setCheck(null)
-          .setAlign(Blockly.ALIGN_RIGHT)
-          .appendField(new Blockly.FieldNumber(0), "NAME");
-      this.setInputsInline(false);
-      this.setColour(0);
-      this.setTooltip("Another custom block");
-      this.setHelpUrl("");
-    }
-  };
+  // Blockly.Blocks['custom_block_3'] = {
+  //   init: function() {
+  //     this.appendDummyInput()
+  //         .appendField("Custom Block 3");
+  //     this.appendValueInput("NAME")
+  //         .setCheck(null)
+  //         .setAlign(Blockly.ALIGN_RIGHT)
+  //         .appendField(new Blockly.FieldNumber(0), "NAME");
+  //     this.setInputsInline(false);
+  //     this.setColour(0);
+  //     this.setTooltip("Another custom block");
+  //     this.setHelpUrl("");
+  //   }
+  // };
 
-  Blockly.Arduino['custom_block_3'] = function(block) {
-    var number_name = block.getFieldValue('NAME');
-    var value_name = Blockly.Arduino.valueToCode(block, 'NAME', Blockly.Arduino.ORDER_ATOMIC);
-    // TODO: Assemble Arduino into code variable.
-    var code = '...;\n';
-    return code;
-  };
+  // Blockly.Arduino['custom_block_3'] = function(block) {
+  //   var number_name = block.getFieldValue('NAME');
+  //   var value_name = Blockly.Arduino.valueToCode(block, 'NAME', Blockly.Arduino.ORDER_ATOMIC);
+  //   // TODO: Assemble Arduino into code variable.
+  //   var code = '...;\n';
+  //   return code;
+  // };
 
   const loadSave = async (workspaceId) => {
     // get the corresponding workspace
@@ -206,8 +267,30 @@ export default function ContentCreatorCanvas({
 
   useEffect(() => {
     // once the activity state is set, set the workspace and save
+
     const setUp = async () => {
       activityRef.current = activity;
+
+      // activityRef.current.toolbox = activityRef.current.toolbox || [];
+      // activityRef.current.toolbox.push(["Custom Blocks", customBlocks])
+      Blockly.Blocks["custom_block_2"] = {
+        init: function () {
+          this.appendDummyInput().appendField("Another custom block");
+          this.appendValueInput("text_input")
+            .setCheck("Number")
+            .setAlign(Blockly.ALIGN_RIGHT)
+            .appendField("angle:")
+            .appendField(new Blockly.FieldAngle(90), "NAME");
+          this.setInputsInline(true);
+          this.setPreviousStatement(true, null);
+          this.setNextStatement(true, null);
+          this.setColour(300);
+          this.setTooltip("Another custom block");
+          this.setHelpUrl("");
+        },
+      };
+      // setWorkspace();
+
       if (!workspaceRef.current && activity && Object.keys(activity).length !== 0) {
         setWorkspace();
 
@@ -219,7 +302,7 @@ export default function ContentCreatorCanvas({
       }
     };
     setUp();
-  }, [activity, isSandbox, customBlockIndex]);
+  }, [activity, isSandbox, customBlocks]);
 
   const handleCreatorSave = async () => {
     // Save activity template
@@ -367,27 +450,158 @@ export default function ContentCreatorCanvas({
       </Menu.Item>
     </Menu>
   );
-  
-  const handleNewBlock = () => {
-    console.log("new block");
-    setShowNewBlockModal(true);
-  }
+
+  /**=================================================*/
+  /**=========== CUSTOM BLOCK CONFIG START ===========*/
+  /**=================================================*/
+  // const handleNewBlock = () => {
+  //   console.log("new block");
+  //   setShowNewBlockModal(true);
+  // }
 
   // Function to handle opening the BlockConfigEditor
   const handleOpenBlockConfigEditor = () => {
     setShowBlockConfigEditor(true);
   };
 
+  const storeCustomBlock = (name, config, generatorStub, description) => {
+    // temporarily save block config to local storage
+    // const customBlocks =
+    //   localStorage.getItem("blockConfig") ||
+    //   localStorage.setItem("blockConfig", JSON.stringify([]));
+
+    // customBlocks.push(config);
+    // localStorage.setItem("blockConfig", JSON.stringify(customBlocks));
+
+    // let customBlock = {
+    //   name: name,
+    //   image_url: "https://www.arduino.cc/en/uploads/Tutorial/ExampleCircuit_bb.png",
+    //   description: description,
+    //   config: config,
+    //   generatorStub: generatorStub,
+    // }
+
+    // setCustomBlocks([...customBlocks, customBlock]);
+
+    // Blockly.Blocks[name] = {
+    //   init: function() {
+    //     // this.jsonInit(config);
+    //     this.jsonInit({
+    //       "message0": 'length of %1',
+    //       "args0": [
+    //         {
+    //           "type": "input_value",
+    //           "name": "VALUE",
+    //           "check": "String"
+    //         }
+    //       ],
+    //       "output": "Number",
+    //       "colour": 160,
+    //       "tooltip": "Returns number of letters in the provided text.",
+    //       "helpUrl": "http://www.w3schools.com/jsref/jsref_length_string.asp"
+    //     })
+    //   }
+    // };
+    Blockly.Blocks["custom_block_2"] = {
+      init: function () {
+        this.appendDummyInput().appendField("Another custom block");
+        this.appendValueInput("text_input")
+          .setCheck("Number")
+          .setAlign(Blockly.ALIGN_RIGHT)
+          .appendField("angle:")
+          .appendField(new Blockly.FieldAngle(90), "NAME");
+        this.setInputsInline(true);
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setColour(300);
+        this.setTooltip("Another custom block");
+        this.setHelpUrl("");
+      },
+    };
+
+    setCustomBlocks([...customBlocks, { name: "custom_block_2" }]);
+    
+    
+    const activity = activityRef.current;
+    const studentToolbox = activity.toolbox;
+    
+    console.log("activity", activity)
+    console.log("studentToolbox", studentToolbox)
+    
+    const categories = activity.toolbox.map(([category, blocks]) => category);
+    
+    if (!categories.includes("Custom Blocks")) {
+      setActivity({
+        ...activity,
+        toolbox: [
+          ...activity.toolbox,
+          ["Custom Blocks", [...customBlocks, { name: "custom_block_2" }]],
+        ],
+      });
+    } else {
+      const newToolbox = activity.toolbox.map(([category, blocks]) => {
+        if (category === "Custom Blocks") {
+          return ["Custom Blocks", [...blocks, { name: "custom_block_2" }]];
+        } else {
+          return [category, blocks];
+        }
+      });
+      setActivity({ ...activity, toolbox: newToolbox });
+    }
+    
+    
+    
+    // handleUpdateWorkspace(activity.id, workspaceRef, studentToolbox);
+    
+    // activityRef.current.newBlock()
+
+    // activityRef.current.toolbox.push(["Custom Blocks", customBlocks]);
+
+    // window.Blockly.updateToolbox(toolbox);
+
+    // setWorkspace();
+    // activityRef.current.forceUpdate();
+
+    // forceUpdate();
+  };
+
+  const getCustomBlocks = () => {
+    // get custom blocks from local storage
+    const customBlocks =
+      localStorage.getItem("blockConfig") ||
+      localStorage.setItem("blockConfig", JSON.stringify([]));
+    return customBlocks;
+  };
+
   // Function to handle saving block configuration from BlockConfigEditor
   const handleSaveBlockConfig = (name, config, generatorStub) => {
-    console.log("Saved block name: ", name, " config: ", config, " generator stub: ", generatorStub);
+    console.log(
+      "Saved block name: ",
+      name,
+      " config: ",
+      config,
+      " generator stub: ",
+      generatorStub
+    );
     setBlockConfig(config);
     setShowBlockConfigEditor(false);
     setShowCustomBar(true);
+
+    storeCustomBlock(name, config, generatorStub, "description coming soon...");
+
+    rerenderWorkspace();
+
+    // setBlockConfig({
+    //   ...blockConfig,
+    //   name: name,
+    //   config: config,
+    //   generatorStub: generatorStub,
+    // })
+
     // setCustomBlockIndex(customBlockIndex + 1);
-    setCustomBlockIndex((prevState) => {return prevState + 1})
-    console.log(customBlockIndex);
-    window.Blockly.updateToolbox(toolbox);
+    // setCustomBlockIndex((prevState) => {return prevState + 1})
+    // console.log(customBlockIndex);
+    // window.Blockly.updateToolbox(toolbox);
   };
 
   // Function to handle canceling block configuration in BlockConfigEditor
@@ -395,10 +609,17 @@ export default function ContentCreatorCanvas({
     setShowBlockConfigEditor(false);
   };
 
+  /**===============================================*/
+  /**=========== CUSTOM BLOCK CONFIG END ===========*/
+  /**===============================================*/
+
   return (
     <div id="horizontal-container" className="flex flex-column">
-      <div className="flex flex-row" style={{ height: '700px'}} > 
-        <div id="bottom-container" className="flex flex-column vertical-container overflow-visible"style={{ height: '800px'}}>
+      <div className="flex flex-row" style={{ height: "700px" }}>
+        <div
+          id="bottom-container"
+          className="flex flex-column vertical-container overflow-visible"
+          style={{ height: "800px" }}>
           <Spin
             tip="Compiling Code Please Wait... It may take up to 20 seconds to compile your code."
             className="compilePop"
@@ -495,33 +716,34 @@ export default function ContentCreatorCanvas({
               </Col>
             </Row>
             <div id="blockly-canvas" />
-            <button className="btn new-block__btn" onClick={handleOpenBlockConfigEditor}>Configure Block</button>
-
+            <button className="btn new-block__btn" onClick={handleOpenBlockConfigEditor}>
+              Configure Block
+            </button>
           </Spin>
         </div>
         {!isMentorActivity && (
           <div className="flex flex-column">
-            {!showBlockConfigEditor && (<StudentToolboxMenu
-              activity={activity}
-              studentToolbox={studentToolbox}
-              setStudentToolbox={setStudentToolbox}
-              openedToolBoxCategories={openedToolBoxCategories}
-              setOpenedToolBoxCategories={setOpenedToolBoxCategories}
-            
-            />
+            {!showBlockConfigEditor && (
+              <StudentToolboxMenu
+                activity={activity}
+                studentToolbox={studentToolbox}
+                setStudentToolbox={setStudentToolbox}
+                openedToolBoxCategories={openedToolBoxCategories}
+                setOpenedToolBoxCategories={setOpenedToolBoxCategories}
+              />
             )}
-            {showBlockConfigEditor && (<BlockConfigEditor
+            {showBlockConfigEditor && (
+              <BlockConfigEditor
                 initialConfig={blockConfig}
                 onSave={handleSaveBlockConfig}
                 onCancel={handleCancelBlockConfig}
-            />
+              />
             )}
             {/*<button className="btn new-block__btn" onClick={handleNewBlock}>Create New Block</button>
             <NewBlockModal visible={showNewBlockModal} setVisible={setShowNewBlockModal} />*/}
-
           </div>
         )}
-        
+
         <ConsoleModal
           show={showConsole}
           connectionOpen={connectionOpen}
@@ -538,6 +760,8 @@ export default function ContentCreatorCanvas({
 
       {/* This xml is for the blocks' menu we will provide. Here are examples on how to include categories and subcategories */}
       <xml id="toolbox" is="Blockly workspace">
+        {console.log("activity.toolbox", activity.toolbox)}
+
         {
           // Maps out block categories
           activity &&
@@ -554,13 +778,18 @@ export default function ContentCreatorCanvas({
               </category>
             ))
         }
-        {console.log("status at time of render", showCustomBar)}
-        {showCustomBar && (
-            <category name='some sample custom blocks'>
-              {myCustomBlocks.slice(0, customBlockIndex).map((blockType, index) => (
+
+        {false && showCustomBar && (
+        <category name="Custom Blocks" is="Blockly category">
+          {/* {myCustomBlocks.slice(0, customBlockIndex).map((blockType, index) => (
                   <block key={index} type={blockType} />
-              ))}
-            </category>
+              ))} */}
+          {/* <block type="custom_block_2" is="Blockly block" /> */}
+          {console.log("customBlocks", customBlocks)}
+          {customBlocks.map((block) => {
+            return <block type={block.name} is="Blockly block" key={block.name} />;
+          })}
+        </category>
         )}
       </xml>
 
