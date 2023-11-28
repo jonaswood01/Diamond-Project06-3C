@@ -495,7 +495,8 @@ export default function ContentCreatorCanvas({
               </Col>
             </Row>
             <div id="blockly-canvas" />
-            <button clasName="btn new-block__btn" onClick={handleOpenBlockConfigEditor}>Configure Block</button>
+            <button className="btn new-block__btn" onClick={handleOpenBlockConfigEditor}>Configure Block</button>
+
           </Spin>
         </div>
         {!isMentorActivity && (
@@ -507,6 +508,12 @@ export default function ContentCreatorCanvas({
               openedToolBoxCategories={openedToolBoxCategories}
               setOpenedToolBoxCategories={setOpenedToolBoxCategories}
             
+            />
+            )}
+            {showBlockConfigEditor && (<BlockConfigEditor
+                initialConfig={blockConfig}
+                onSave={handleSaveBlockConfig}
+                onCancel={handleCancelBlockConfig}
             />
             )}
             {/*<button className="btn new-block__btn" onClick={handleNewBlock}>Create New Block</button>
