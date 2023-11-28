@@ -1,4 +1,4 @@
-@import '../../assets/style.less';
+@import "../../assets/style.less";
 #content-creator-table-container {
   width: 80%;
   margin: 2.5vh auto 0 auto;
@@ -22,8 +22,6 @@
 
   .ant-table-wrapper {
   }
-  
-  
 }
 
 .btn {
@@ -35,7 +33,7 @@
   display: block;
   margin: 0 auto;
   border: 2px solid;
-  border-color: #5BABDE;
+  border-color: #5babde;
   padding: 14px 40px;
   width: 80%;
   outline: none;
@@ -43,26 +41,26 @@
   font-size: 1.2em;
   font-weight: 500;
   border-radius: 30px;
-  
+
   transition: all 0.25s ease;
   position: relative;
-  
+
   overflow: hidden;
   z-index: 2;
-  
+
   &::before {
     content: "";
     display: block;
     position: absolute;
     top: -5%;
     left: -1%;
-    
+
     width: 110%;
     height: 110%;
-    background-color: #F3D250;
+    background-color: #f3d250;
     z-index: -1;
   }
-  
+
   &::after {
     content: "";
     display: block;
@@ -71,18 +69,85 @@
     left: -150%;
     width: 110%;
     height: 110%;
-    
-    background-color: #5BABDE;
+
+    background-color: #5babde;
     z-index: -1;
     border-radius: inherit;
-    
+
     transition: inherit;
   }
-  
+
   &:hover {
     color: white;
-    transition-delay: .05s;
-    
+    transition-delay: 0.05s;
+
+    &::after {
+      left: -1%;
+    }
+  }
+}
+
+.configure-block-form-actions {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.configure-block-btn {
+  background: transparent;
+  display: block;
+  margin: 0 auto;
+  border: 2px solid;
+  border-color: #5babde;
+  padding: 14px 40px;
+  flex: 1;
+  
+  outline: none;
+  color: #414141;
+  font-size: 1.2em;
+  font-weight: 500;
+  border-radius: 30px !important;
+
+  transition: all 0.25s ease;
+  position: relative;
+
+  overflow: hidden;
+  z-index: 2;
+
+  &::before {
+    content: "";
+    display: block;
+    position: absolute;
+    top: -5%;
+    left: -1%;
+
+    width: 110%;
+    height: 110%;
+    background-color: #f3d250;
+    z-index: -1;
+  }
+
+  &::after {
+    content: "";
+    display: block;
+    position: absolute;
+    top: -5%;
+    left: -150%;
+    width: 110%;
+    height: 110%;
+
+    background-color: #5babde;
+    z-index: -1;
+    border-radius: inherit;
+
+    transition: inherit;
+  }
+
+  &:hover {
+    color: white;
+    transition-delay: 0.05s;
+
     &::after {
       left: -1%;
     }
@@ -90,6 +155,6 @@
 }
 
 .blockConfig {
-  display:flex;
-  flex-direction:column;
+  display: flex;
+  flex-direction: column;
 }
