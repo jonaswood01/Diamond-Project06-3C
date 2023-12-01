@@ -6,6 +6,7 @@
   "scripts": {
     "develop": "strapi develop",
     "start": "strapi start",
+    "start:docker": "npx strapi start",
     "build": "strapi build",
     "strapi": "strapi",
     "build-client": "rm -rf ./public/client/* && cd ../client && env PUBLIC_URL=/client yarn build && mv ./build/* ../server/public/client/"
