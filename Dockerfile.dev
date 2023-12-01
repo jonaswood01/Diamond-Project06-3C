@@ -24,4 +24,4 @@ RUN PUBLIC_URL=/api yarn build
 
 # Expose port to host and specify command to run on container start
 EXPOSE 1337
-CMD ["yarn", "start"]
+CMD ["yarn", "start:docker"]
