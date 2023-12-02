@@ -24,6 +24,7 @@ import ArduinoLogo from "../Icons/ArduinoLogo";
 import PlotterLogo from "../Icons/PlotterLogo";
 import { useNavigate } from "react-router-dom";
 import NewBlockModal from "./NewBlockModal";
+import BlockConfigEditor from "./BlockConfigEditor";
 
 let plotId = 1;
 
@@ -47,16 +48,48 @@ export default function ContentCreatorCanvas({
   const [studentToolbox, setStudentToolbox] = useState([]);
   const [openedToolBoxCategories, setOpenedToolBoxCategories] = useState([]);
   const [showNewBlockModal, setShowNewBlockModal] = useState(false);
+  const [showBlockConfigEditor, setShowBlockConfigEditor] = useState(false);
+  const [showCustomBar, setShowCustomBar] = useState(false);
+  const [customBlocks, setCustomBlocks] = useState([]);
+  const [blockConfig, setBlockConfig] = useState({});
 
   const navigate = useNavigate();
   const [forceUpdate] = useReducer((x) => x + 1, 0);
   const workspaceRef = useRef(null);
   const activityRef = useRef(null);
 
+  const rerenderWorkspace = () => {
+    workspaceRef.current.clear();
+    let xml = window.Blockly.Xml.textToDom(activityRef.current.template);
+    window.Blockly.Xml.domToWorkspace(xml, workspaceRef.current);
+    workspaceRef.current.clearUndo();
+  };
+
   const setWorkspace = () => {
     workspaceRef.current = window.Blockly.inject("blockly-canvas", {
       toolbox: document.getElementById("toolbox"),
     });
+
+    workspaceRef.current.addChangeListener((event) => {
+      if (event.type === "create") {
+        workspaceRef.current.updateToolbox(document.getElementById("toolbox"));
+      }
+    });
+    
+    // workspaceRef.current.registerToolboxCategoryCallback("CUSTOM_BLOCKS", () => {
+    //   return customBlocks.map((block) => {
+    //     return {
+    //       kind: "BLOCK",
+    //       blockxml: `<block type="${block.name}"></block>`,
+    //     };
+    //   });
+    // });
+    
+    // setCustomBlocks(getCustomBlocks());
+    
+    const savedCustomBlocks = getCustomBlocks();
+    console.log("savedCustomBlocks", savedCustomBlocks);
+    setCustomBlocks(savedCustomBlocks);
   };
 
   const loadSave = async (workspaceId) => {
@@ -114,6 +147,7 @@ export default function ContentCreatorCanvas({
 
   useEffect(() => {
     // once the activity state is set, set the workspace and save
+
     const setUp = async () => {
       activityRef.current = activity;
       if (!workspaceRef.current && activity && Object.keys(activity).length !== 0) {
@@ -127,7 +161,7 @@ export default function ContentCreatorCanvas({
       }
     };
     setUp();
-  }, [activity, isSandbox]);
+  }, [activity, isSandbox, customBlocks]);
 
   const handleCreatorSave = async () => {
     // Save activity template
@@ -275,27 +309,92 @@ export default function ContentCreatorCanvas({
       </Menu.Item>
     </Menu>
   );
-  
-  const handleNewBlock = () => {
-    console.log("new block");
-    setShowNewBlockModal(true);
-  }
 
-//clear the working space
-  const handleTrashbin = () => {
-    if (workspaceRef.current.undoStack_.length >= 0) workspaceRef.current.clear(false);
+  /**=================================================*/
+  /**=========== CUSTOM BLOCK CONFIG START ===========*/
+  /**=================================================*/
+
+  // Function to handle opening the BlockConfigEditor
+  const handleOpenBlockConfigEditor = () => {
+    setShowBlockConfigEditor(true);
   };
-  const useTrashCan = () => 
-  {
-    console.log("im working");
-    handleTrashbin(true);
+  
+  const getCustomBlocks = () => {
+    const customBlocks = [];
+    
+    // TODO: get the custom blocks from the database
+    
+    return customBlocks;
   }
 
+  const storeCustomBlock = (config, generatorStub) => {
+    // const json = JSON.stringify(config);
+    // const blockType = JSON.parse(json)
+    const blockType = config.type;
+    console.log("config", config);
+    console.log("blockType", blockType);
+
+    Blockly.Blocks[blockType] = {
+      init: function () {
+        this.jsonInit({ ...config, type: blockType });
+        let block = this;
+        this.setTooltip(() => {
+          return blockType;
+        });
+      },
+    };
+
+    setCustomBlocks([...customBlocks, { name: blockType }]);
+
+    const categories = activity.toolbox.map(([category, blocks]) => category);
+
+    if (!categories.includes("Custom Blocks")) {
+      setActivity({
+        ...activity,
+        toolbox: [...activity.toolbox, ["Custom Blocks", [...customBlocks, { name: blockType }]]],
+      });
+    } else {
+      const newToolbox = activity.toolbox.map(([category, blocks]) => {
+        if (category === "Custom Blocks") {
+          return ["Custom Blocks", [...blocks, { name: blockType }]];
+        } else {
+          return [category, blocks];
+        }
+      });
+      setActivity({ ...activity, toolbox: newToolbox });
+    }
+    
+    // TODO: store the custom block in the database
+  };
+
+  // Function to handle saving block configuration from BlockConfigEditor
+  const handleSaveBlockConfig = (config, generatorStub) => {
+    console.log(" config: ", config, " generator stub: ", generatorStub);
+    setBlockConfig(config);
+    setShowBlockConfigEditor(false);
+    setShowCustomBar(true);
+
+    storeCustomBlock(config, generatorStub);
+
+    rerenderWorkspace();
+  };
+
+  // Function to handle canceling block configuration in BlockConfigEditor
+  const handleCancelBlockConfig = () => {
+    setShowBlockConfigEditor(false);
+  };
+
+  /**===============================================*/
+  /**=========== CUSTOM BLOCK CONFIG END ===========*/
+  /**===============================================*/
 
   return (
     <div id="horizontal-container" className="flex flex-column">
-      <div className="flex flex-row">
-        <div id="bottom-container" className="flex flex-column vertical-container overflow-visible">
+      <div className="flex flex-row" style={{ height: "700px" }}>
+        <div
+          id="bottom-container"
+          className="flex flex-column vertical-container overflow-visible"
+          style={{ height: "800px" }}>
           <Spin
             tip="Compiling Code Please Wait... It may take up to 20 seconds to compile your code."
             className="compilePop"
@@ -392,24 +491,32 @@ export default function ContentCreatorCanvas({
               </Col>
             </Row>
             <div id="blockly-canvas" />
+            <button className="btn new-block__btn" onClick={handleOpenBlockConfigEditor}>
+              Configure Block
+            </button>
           </Spin>
         </div>
         {!isMentorActivity && (
           <div className="flex flex-column">
-            <StudentToolboxMenu
-              activity={activity}
-              studentToolbox={studentToolbox}
-              setStudentToolbox={setStudentToolbox}
-              openedToolBoxCategories={openedToolBoxCategories}
-              setOpenedToolBoxCategories={setOpenedToolBoxCategories}
-              
-            />
-            <button className="btn new-block__btn" onClick={handleNewBlock}>Create New Block</button>
-           
-            <NewBlockModal visible={showNewBlockModal} setVisible={setShowNewBlockModal} />
-            
+            {!showBlockConfigEditor && (
+              <StudentToolboxMenu
+                activity={activity}
+                studentToolbox={studentToolbox}
+                setStudentToolbox={setStudentToolbox}
+                openedToolBoxCategories={openedToolBoxCategories}
+                setOpenedToolBoxCategories={setOpenedToolBoxCategories}
+              />
+            )}
+            {showBlockConfigEditor && (
+              <BlockConfigEditor
+                initialConfig={blockConfig}
+                onSave={handleSaveBlockConfig}
+                onCancel={handleCancelBlockConfig}
+              />
+            )}
           </div>
         )}
+
         <ConsoleModal
           show={showConsole}
           connectionOpen={connectionOpen}
@@ -422,12 +529,12 @@ export default function ContentCreatorCanvas({
           setPlotData={setPlotData}
           plotId={plotId}
         />
-         
       </div>
 
       {/* This xml is for the blocks' menu we will provide. Here are examples on how to include categories and subcategories */}
-      <button className="trash_can" onClick={useTrashCan}>trashbin bottom</button>
       <xml id="toolbox" is="Blockly workspace">
+        {console.log("activity.toolbox", activity.toolbox)}
+
         {
           // Maps out block categories
           activity &&
