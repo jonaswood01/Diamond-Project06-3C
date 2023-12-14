@@ -25,6 +25,7 @@ import PlotterLogo from "../Icons/PlotterLogo";
 import { useNavigate } from "react-router-dom";
 import NewBlockModal from "./NewBlockModal";
 import BlockConfigEditor from "./BlockConfigEditor";
+import { getCustomBlock } from "../../../../Utils/Customblocksgetter";
 
 let plotId = 1;
 
@@ -86,6 +87,11 @@ export default function ContentCreatorCanvas({
     // });
     
     // setCustomBlocks(getCustomBlocks());
+
+    const storedCustomBlocks = getCustomBlock().then(res => {
+      console.log("stored blocks: ", res)
+    })
+
     
     const savedCustomBlocks = getCustomBlocks();
     console.log("savedCustomBlocks", savedCustomBlocks);
@@ -319,13 +325,77 @@ export default function ContentCreatorCanvas({
     setShowBlockConfigEditor(true);
   };
   
-  const getCustomBlocks = () => {
+  const getCustomBlocks = async () => {
     const customBlocks = [];
     
     // TODO: get the custom blocks from the database
+    console.log('reached!');
+    // const response = await getCustomBlocks();
+    const newCustomBlocks = await getCustomBlock();
+
+    console.log('Custom Blocks:', newCustomBlocks);
     
     return customBlocks;
   }
+
+//   // Import axios and the necessary API functions
+// import axios from 'axios';
+// import { getCustomBlock } from '<path-to-your-api-functions>';
+
+// // Function to get custom blocks from the server
+// const getCustomBlocks = async () => {
+//   try {
+//     // Call the API function to get custom blocks
+//     const response = await getCustomBlock();
+
+//     // Check if the request was successful
+//     if (response.status === 200) {
+//       // Extract the custom blocks from the response data
+//       const customBlocks = response.data;
+
+//       // Log the custom blocks for debugging (you can remove this)
+//       console.log('Custom Blocks:', customBlocks);
+
+//       // Return the custom blocks
+//       return customBlocks;
+//     } else {
+//       // Handle the case where the request was not successful
+//       console.error('Failed to get custom blocks:', response.data);
+//       return [];
+//     }
+//   } catch (error) {
+//     // Handle any errors that occurred during the request
+//     console.error('Error fetching custom blocks:', error);
+//     return [];
+//   }
+// };
+
+// // Use the getCustomBlocks function in your useEffect hook
+// useEffect(() => {
+//   const setUp = async () => {
+//     activityRef.current = activity;
+//     if (!workspaceRef.current && activity && Object.keys(activity).length !== 0) {
+//       setWorkspace();
+
+//       let xml = isMentorActivity
+//         ? window.Blockly.Xml.textToDom(activity.activity_template)
+//         : window.Blockly.Xml.textToDom(activity.template);
+//       window.Blockly.Xml.domToWorkspace(xml, workspaceRef.current);
+//       workspaceRef.current.clearUndo();
+//     }
+
+//     // Call getCustomBlocks to fetch custom blocks
+//     const savedCustomBlocks = await getCustomBlocks();
+
+//     // Log the fetched custom blocks for debugging (you can remove this)
+//     console.log('Fetched Custom Blocks:', savedCustomBlocks);
+
+//     // Set the custom blocks in the state
+//     setCustomBlocks(savedCustomBlocks);
+//   };
+//   setUp();
+// }, [activity, isSandbox, customBlocks]);
+
 
   const storeCustomBlock = (config, generatorStub) => {
     // const json = JSON.stringify(config);
@@ -383,6 +453,16 @@ export default function ContentCreatorCanvas({
   const handleCancelBlockConfig = () => {
     setShowBlockConfigEditor(false);
   };
+
+  //clear the working space
+  const handleTrashbin = () => {
+    if (workspaceRef.current.undoStack_.length >= 0) workspaceRef.current.clear(false);
+  };
+  const useTrashCan = () => 
+  {
+    console.log("im working");
+    handleTrashbin(true);
+  }
 
   /**===============================================*/
   /**=========== CUSTOM BLOCK CONFIG END ===========*/
@@ -491,9 +571,9 @@ export default function ContentCreatorCanvas({
               </Col>
             </Row>
             <div id="blockly-canvas" />
-            <button className="btn new-block__btn" onClick={handleOpenBlockConfigEditor}>
+            {/* <button className="btn new-block__btn" onClick={handleOpenBlockConfigEditor}>
               Configure Block
-            </button>
+            </button> */}
           </Spin>
         </div>
         {!isMentorActivity && (
@@ -532,6 +612,7 @@ export default function ContentCreatorCanvas({
       </div>
 
       {/* This xml is for the blocks' menu we will provide. Here are examples on how to include categories and subcategories */}
+      <button className="trash_can" onClick={useTrashCan}>trashbin bottom</button>
       <xml id="toolbox" is="Blockly workspace">
         {console.log("activity.toolbox", activity.toolbox)}
 
@@ -551,6 +632,11 @@ export default function ContentCreatorCanvas({
               </category>
             ))
         }
+        <category name='new custom blocks'>
+          <block type='block_comment' is="Blockly block" key='block_comment' />;
+          <block type='infinite_loop' is="Blockly block" key='infinite_loop' />;
+          <block type='math_modulo' is="Blockly block" key='math_modulo' />;
+        </category>
       </xml>
 
       {compileError && (
